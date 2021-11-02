@@ -1,0 +1,147 @@
+---
+title: "Incidental catch at BC marine finfish aquaculture sites"
+date: "November 1st 2021"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
+```
+
+```{r libraries, include=FALSE}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(stringdist)
+library(knitr)
+library(here)
+```
+
+## Context 
+
+Conditions of Licence for finfish aquaculture in British Columbia include requirements for facility operators to maintain an incidental catch log with record of wild fish caught at facilities during harvest and transfer events since 2011. This information is submitted to DFO and public reports are posted quarterly. The ["Incidental catch at BC marine finfish aquaculture sites"](<https://open.canada.ca/data/en/dataset/0bf04c4e-d2b0-4188-9053-08dc4a7a2b03>) dataset is available on the Open Canada website.
+
+As stated on the website, the tables provided list the reported incidental catch of dead wild finfish and the year and month in which they were captured from B.C. marine finfish facilities during harvest and transfer events. Data are reported in the quarter in which the harvest activities ended and do not exist for farms that do not have fish on site or where no incidentally caught fish were recorded.
+
+```{r data, include=FALSE}
+data <- 
+  read.csv(here("data/raw/incidental-accidentel-2011-ongoing-rpt-pac-dfo-mpo-aquaculture-eng-downloaded-2021-10-31.csv")) %>% 
+  clean_names() %>%
+  mutate(
+    common_name = as_factor(common_name), 
+    scientific_name = as_factor(scientific_name), 
+    number_of_fish = as.numeric(number_of_fish)
+  ) %>%
+  mutate(scientific_name = replace(scientific_name, scientific_name == "Oncorhynchus tschawytscha", "Oncorhynchus tshawytscha"),
+         scientific_name = replace(scientific_name, scientific_name == "Oncorhynchus gorbuscha" , "Oncorhynchus gorbuscha")
+         )
+```
+
+## Overview of Pacific salmon species reported during harvest and transfer events
+
+```{r, include = FALSE}
+str(data)
+```
+
+```{r, include = FALSE}
+pacific_salmon <- c("Chinook Salmon", "Chum Salmon", "Coho Salmon", "Pink Salmon", "Sockeye Salmon", "Pacific Salmon")
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>%
+  filter(common_name %in% pacific_salmon) %>%
+  group_by(common_name) %>%
+  summarise(
+    total = sum(number_of_fish)
+    ) %>%
+  kable(
+    caption = "Pacific salmon species and total number of fish reported between 2011 and 2021 (incomplete) as incidental catches on aquaculture marine rearing sites in British Columbia"
+  )
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>%
+  filter(common_name %in% pacific_salmon) %>%
+  group_by(finfish_aquaculture_reporting_zone) %>%
+  summarise(
+    total = sum(number_of_fish)
+    ) %>%
+  kable(
+    caption = "All Pacific salmon species reported between 2011 and 2021 (incomplete) as incidental catches on aquaculture marine rearing sites in British Columbia"
+  )
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>% 
+  filter(common_name == "Chinook Salmon") %>%
+  group_by(finfish_aquaculture_reporting_zone) %>%
+  summarise(
+    total = sum(number_of_fish)
+  ) %>%
+  kable(
+    caption = "Total number of Chinoook Salmon reported as incidental catches on aquaculture marine rearing sites in various Finfish Aquaculture Reporting Zones between 2011 and 2021 (up to April) in British Columbia"
+  )
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>% 
+  filter(common_name == "Chum Salmon") %>%
+  group_by(finfish_aquaculture_reporting_zone) %>%
+  summarise(
+    total = sum(number_of_fish)
+  ) %>%
+  kable(
+    caption = "Total number of Chum Salmon reported as incidental catches on aquaculture marine rearing sites in various Finfish Aquaculture Reporting Zones between 2011 and 2021 (up to April) in British Columbia"
+  )
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>% 
+  filter(common_name == "Coho Salmon") %>%
+  group_by(finfish_aquaculture_reporting_zone) %>%
+  summarise(
+    total = sum(number_of_fish)
+  ) %>%
+  kable(
+    caption = "Total number of Coho Salmon reported as incidental catches on aquaculture marine rearing sites in various Finfish Aquaculture Reporting Zones between 2011 and 2021 (up to April) in British Columbia"
+  )
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>% 
+  filter(common_name == "Pink Salmon") %>%
+  group_by(finfish_aquaculture_reporting_zone) %>%
+  summarise(
+    total = sum(number_of_fish)
+  ) %>%
+  kable(
+    caption = "Total number of Pink Salmon reported as incidental catches on aquaculture marine rearing sites in various Finfish Aquaculture Reporting Zones between 2011 and 2021 (up to April) in British Columbia"
+  )
+```
+
+```{r, echo=FALSE, message=FALSE}
+data %>% 
+  filter(common_name == "Sockeye Salmon") %>%
+  group_by(finfish_aquaculture_reporting_zone) %>%
+  summarise(
+    total = sum(number_of_fish)
+  ) %>%
+  kable(
+    caption = "Total number of Sockeye Salmon reported as incidental catches on aquaculture marine rearing sites in various Finfish Aquaculture Reporting Zones between 2011 and 2021 (up to April) in British Columbia"
+  )
+```
+\newpage
+## Appendix: All fish species reported during harvest and transfer events (needs data cleaning)
+
+```{r, echo=FALSE, message=FALSE}
+data %>%
+  group_by(common_name, scientific_name) %>%
+  summarise(
+    total = sum(number_of_fish)
+    ) %>%
+  kable(
+    caption = "Fish species and total number of fish reported between 2011 and 2021 (incomplete) as incidental catches on aquaculture marine rearing sites in British Columbia"
+  )
+```
+

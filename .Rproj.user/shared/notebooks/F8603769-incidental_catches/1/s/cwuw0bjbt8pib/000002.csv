@@ -1,0 +1,16 @@
+"0","data <- "
+"0","  read.csv(here(""data/raw/incidental-accidentel-2011-ongoing-rpt-pac-dfo-mpo-aquaculture-eng-downloaded-2021-10-31.csv"")) %>% "
+"0","  clean_names() %>%"
+"0","  mutate("
+"0","    common_name = as_factor(common_name), "
+"0","    scientific_name = as_factor(scientific_name), "
+"0","    number_of_fish = as.numeric(number_of_fish)"
+"0","  ) %>%"
+"0","  mutate(scientific_name = replace(scientific_name, scientific_name == ""Oncorhynchus tschawytscha"", ""Oncorhynchus tshawytscha""),"
+"0","         scientific_name = replace(scientific_name, scientific_name == ""Oncorhynchus gorbuscha"" , ""Oncorhynchus gorbuscha"")"
+"0","         )"
+"2","Warning:"
+"2"," Problem with `mutate()` column `number_of_fish`.
+[34mℹ[39m `number_of_fish = as.numeric(number_of_fish)`.
+[34mℹ[39m NAs introduced by coercion
+"
